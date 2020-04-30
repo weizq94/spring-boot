@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.activiti.mapper.WorkflowUserTaskMapper">
+    <resultMap id="BaseResultMap" type="com.activiti.pojo.WorkflowUserTask">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="proc_def_key" jdbcType="VARCHAR" property="procDefKey"/>
+        <result column="proc_def_name" jdbcType="VARCHAR" property="procDefName"/>
+        <result column="task_def_key" jdbcType="VARCHAR" property="taskDefKey"/>
+        <result column="task_name" jdbcType="VARCHAR" property="taskName"/>
+        <result column="task_type" jdbcType="VARCHAR" property="taskType"/>
+        <result column="candidate_name" jdbcType="VARCHAR" property="candidateName"/>
+        <result column="candidate_ids" jdbcType="VARCHAR" property="candidateIds"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+    </resultMap>
+    <sql id="basic_list">
+		a.id,a.proc_def_key,a.proc_def_name,a.task_def_key,a.task_name,a.task_type,a.candidate_name,a.candidate_ids,a.status,a.created
+	</sql>
+    <select id="listWorkflowUserTaskByDefKeyAndTaskKey" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="basic_list"/>
+        FROM kb_workflow_user_task a
+        <where>
+            a.proc_def_key=#{procDefKey}
+            and a.task_def_key=#{taskDefKey}
+        </where>
+    </select>
+
+    <select id="listWorkflowUserTaskByDefKey" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="basic_list"/>
+        FROM kb_workflow_user_task a
+        <where>
+            a.proc_def_key=#{procDefKey}
+        </where>
+    </select>
+
+
+    <select id="getOneByWorkflowUserTaskByDefKeyAndTaskKey" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="basic_list"/>
+        FROM kb_workflow_user_task a
+        <where>
+            a.proc_def_key=#{procDefKey}
+            and a.task_def_key=#{taskDefKey}
+        </where>
+    </select>
+
+
+    <select id="getBpmnData" parameterType="string" resultType="string">
+        SELECT
+            CAST(c.BYTES_ AS CHAR)
+        FROM
+            ACT_HI_TASKINST a
+        LEFT JOIN ACT_RE_PROCDEF b ON a.PROC_DEF_ID_=b.ID_
+        LEFT JOIN ACT_GE_BYTEARRAY c ON b.DEPLOYMENT_ID_=c.DEPLOYMENT_ID_
+        AND  c.NAME_=b.RESOURCE_NAME_
+        WHERE
+            PROC_INST_ID_ = #{instanceId} AND c.GENERATED_=0 LIMIT 0,1
+    </select>
+</mapper>
+
